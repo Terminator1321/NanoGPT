@@ -1,0 +1,16 @@
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.so
+*.egg-info/
+build/
+dist/
+DataHandler/__pycache__
+DataHandler/chats
+DataHandler/merged
+DataHandler/pdfs
+DataHandler/short_chat_data
+DataHandler/txts
+DataHandler/chat_300mb.txt
+DataHandler/pile_500mb.txt

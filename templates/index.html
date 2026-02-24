@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>NanoGPT</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+<div class="app">
+
+    <div class="sidebar">
+        <div class="logo">NanoGPT</div>
+
+        <div class="section">
+            <label>Model</label>
+            <select id="model-select" onchange="switchModel()">
+                {% for model in models %}
+                    <option value="{{model}}" {% if model == current %}selected{% endif %}>
+                        {{model}}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="section">
+            <button onclick="trainModel()">Train</button>
+            <button onclick="saveModel()">Save</button>
+            <button onclick="clearChat()">Clear</button>
+        </div>
+
+        <div class="theme-toggle">
+            <span>Dark Mode</span>
+            <label class="switch">
+                <input type="checkbox" id="theme-switch">
+                <span class="slider"></span>
+            </label>
+        </div>
+    </div>
+
+    <div class="chat-container">
+        <div id="chat-box" class="chat-box"></div>
+
+        <div class="input-area">
+            <textarea id="user-input"
+                      placeholder="Message NanoGPT..."
+                      rows="1"></textarea>
+            <button onclick="sendMessage()">Send</button>
+        </div>
+    </div>
+
+</div>
+
+<script>
+
+const themeSwitch = document.getElementById("theme-switch");
+
+function applyTheme(theme) {
+    document.documentElement.setAttribute("data-theme", theme);
+    localStorage.setItem("theme", theme);
+    themeSwitch.checked = theme === "dark";
+}
+
+(function () {
+    const savedTheme = localStorage.getItem("theme");
+
+    if (savedTheme) {
+        applyTheme(savedTheme);
+    } else {
+        const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+        applyTheme(prefersDark ? "dark" : "light");
+    }
+})();
+
+themeSwitch.addEventListener("change", () => {
+    applyTheme(themeSwitch.checked ? "dark" : "light");
+});
+
+const textarea = document.getElementById("user-input");
+
+textarea.addEventListener("keydown", function(e) {
+    if (e.key === "Enter" && !e.shiftKey) {
+        e.preventDefault();
+        sendMessage();
+    }
+});
+
+textarea.addEventListener("input", function() {
+    this.style.height = "auto";
+    this.style.height = this.scrollHeight + "px";
+});
+
+async function switchModel() {
+    const model = document.getElementById("model-select").value;
+
+    const response = await fetch("/switch_model", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({model})
+    });
+
+    const data = await response.json();
+    alert(data.status);
+    clearChat();
+}
+
+async function sendMessage() {
+    const message = textarea.value.trim();
+    if (!message) return;
+
+    appendMessage("user", message);
+
+    const response = await fetch("/chat", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({message})
+    });
+
+    const data = await response.json();
+    appendMessage("ai", data.response);
+
+    textarea.value = "";
+    textarea.style.height = "auto";
+}
+
+async function trainModel() {
+    await fetch("/train", {method: "POST"});
+    alert("Training complete");
+}
+
+async function saveModel() {
+    await fetch("/save", {method: "POST"});
+    alert("Model saved");
+}
+
+function appendMessage(role, text) {
+    const chatBox = document.getElementById("chat-box");
+
+    chatBox.innerHTML += `
+        <div class="message ${role}">
+            <div class="bubble">
+                ${text.replace(/\n/g, "<br>")}
+            </div>
+        </div>
+    `;
+
+    chatBox.scrollTop = chatBox.scrollHeight;
+}
+
+function clearChat() {
+    document.getElementById("chat-box").innerHTML = "";
+}
+
+</script>
+
+</body>
+</html>
