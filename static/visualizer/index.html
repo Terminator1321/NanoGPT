@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LLM Visualizer</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+
+<div id="ui">
+
+    <div id="top-bar">
+        <div id="title">LLM VISUALIZER</div>
+        <input id="prompt" type="text" placeholder="Type a sentence and press Run…" />
+        <button id="btn" onclick="playThinking()">RUN ▶</button>
+    </div>
+    <div id="main-row">
+
+        <div id="step-log"></div>
+
+        <div id="spacer"></div>
+
+        <div id="right-panel">
+
+            <div id="output-area">
+                <div class="out-label">Awaiting input…</div>
+            </div>
+
+            <div id="token-prob">
+                <div class="out-label">Next Token Candidates</div>
+                <div class="placeholder-msg">Will appear at Output stage</div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<div id="hint">
+    Click a <span class="hl">Transformer</span> block to expand internals &nbsp;·&nbsp;
+    Click background to close
+</div>
+
+<script type="module" src="main.js"></script>
+
+</body>
+</html>
